@@ -3,6 +3,8 @@
 A simple, honest lab framework for evaluating query and search semantics
 between Milvus 3.0 and Elasticsearch 9.4.
 
+![screenshot](live_demo_static.png)
+
 *Used as the basis for: [https://talks.simonhearne.com/2026-08-milvus-search-gap/](https://talks.simonhearne.com/2026-08-milvus-search-gap/)*
 
 One `docker compose up` brings up both engines and a browser app in which each
