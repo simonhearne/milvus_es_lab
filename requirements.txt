@@ -1,0 +1,9 @@
+# For running the loaders / demo app outside the container (e.g. your laptop).
+pymilvus>=3.0
+elasticsearch>=9.4,<10
+pyarrow
+pandas
+numpy
+tqdm
+fastapi>=0.115
+uvicorn[standard]>=0.30

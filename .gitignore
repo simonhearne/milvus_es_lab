@@ -1,0 +1,24 @@
+# local config + runtime state
+.env
+volumes/
+webapp/.cache/
+
+# data artifacts (fetched via data/fetch.py, not stored in git)
+data/amazon_reviews.parquet
+data/*.part
+data/*.npy
+
+# tooling / editor state
+.claude/
+.superpowers/
+.memsearch/
+.playwright-mcp/
+.firecrawl/
+.pytest_cache/
+.ipynb_checkpoints/
+__pycache__/
+.DS_Store
+
+# local working notes
+docs/
+task9-*.png

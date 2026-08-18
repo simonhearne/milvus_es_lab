@@ -1,0 +1,20 @@
+# Solr-format synonyms, single source of truth for Milvus + ES.
+# Equivalence groups with expand=true: every term maps to all the others,
+# bidirectionally. Single-token only (keeps Milvus/ES parity exact).
+ipad, tablet
+laptop, notebook
+tv, television
+earbuds, earphones, headphones
+mic, microphone
+cord, cable
+
+# Misspelling rules for the typo-tolerance panel. Milvus 3.0 has no
+# edit-distance fuzziness, so known typos are handled here instead. Both
+# engines read this file, so it is a mitigation an ES user could equally
+# adopt -- which is what makes the comparison honest.
+laptop, laptp, labtop
+charger, charjer, chargr
+wireless, wireles, wirless
+bluetooth, bluetoth, blutooth
+speaker, speeker, spekaer
+keyboard, keybord, keyboad

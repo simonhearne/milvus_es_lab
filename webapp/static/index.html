@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Milvus 3.0 vs Elasticsearch 9.4</title>
+<link rel="stylesheet" href="/static/vendor/codemirror.css">
+<link rel="stylesheet" href="/static/vendor/material-darker.css">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<header class="bar">
+  <div class="brand">Milvus 3.0 <span class="vs">vs</span> Elasticsearch 9.4</div>
+  <div class="health">
+    <span class="dot" id="dot-milvus" title="Milvus">Milvus</span>
+    <span class="dot" id="dot-es" title="Elasticsearch">Elasticsearch</span>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs"></nav>
+
+<main>
+  <section class="head">
+    <h1 id="feat-title"></h1>
+    <p id="feat-subtitle"></p>
+  </section>
+
+  <section class="controls">
+    <label>Runs
+      <input type="number" id="runs" value="10" min="1" max="200" step="1">
+    </label>
+    <label id="query-label">Query
+      <select id="query"></select>
+    </label>
+    <button id="run" class="primary">Run</button>
+    <button id="show-cached">Show last good run</button>
+    <span id="status" class="status"></span>
+  </section>
+
+  <section class="editors">
+    <div class="pane milvus">
+      <h2>Milvus <span class="badge">pymilvus</span></h2>
+      <textarea id="code-milvus"></textarea>
+    </div>
+    <div class="pane es">
+      <h2>Elasticsearch <span class="badge">elasticsearch-py</span>
+        <button id="es-variant" class="variant" hidden></button></h2>
+      <textarea id="code-es"></textarea>
+    </div>
+  </section>
+
+  <section id="results"></section>
+
+  <section id="intro"></section>
+</main>
+
+<script src="/static/vendor/codemirror.js"></script>
+<script src="/static/vendor/python.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

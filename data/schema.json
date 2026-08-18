@@ -1,0 +1,37 @@
+{
+  "primary_key": "parent_asin",
+  "dense_vectors": {
+    "text_vec": 1024,
+    "image_vec": 1024
+  },
+  "sparse_vectors": [
+    "text_sparse"
+  ],
+  "array_fields": {
+    "categories": {
+      "element": "VARCHAR",
+      "max_capacity": 16,
+      "max_length": 128
+    }
+  },
+  "geo_fields": ["store_location"],
+  "timestamp_fields": ["first_seen"],
+  "scalar_types": {
+    "image_url": "VARCHAR",
+    "average_rating": "FLOAT",
+    "store": "VARCHAR",
+    "title": "VARCHAR",
+    "parent_asin": "VARCHAR",
+    "price": "FLOAT",
+    "main_category": "VARCHAR",
+    "rating_number": "INT64",
+    "text_snippet": "VARCHAR"
+  },
+  "bm25": {
+    "name": "text_snippet_bm25",
+    "source": "text_snippet",
+    "output": "text_sparse",
+    "analyzer_params": "{\"tokenizer\":\"standard\",\"filter\":[\"lowercase\",\"asciifolding\",{\"type\":\"stemmer\",\"language\":\"english\"},{\"type\":\"stop\",\"stop_words\":[\"_english_\"]}]}"
+  },
+  "count": 97894
+}

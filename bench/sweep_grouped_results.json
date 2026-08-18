@@ -1,0 +1,116 @@
+{
+ "n_queries": 40,
+ "k": 10,
+ "n_categories": 36,
+ "results": {
+  "milvus": [
+   {
+    "nprobe": 1,
+    "mean_ms": 11.318129050016523,
+    "p95_ms": 53.245604499784335,
+    "mean_groups": 10.0,
+    "group_recall": 0.8550000000000001
+   },
+   {
+    "nprobe": 2,
+    "mean_ms": 13.568734350042178,
+    "p95_ms": 60.880633950114294,
+    "mean_groups": 10.0,
+    "group_recall": 0.8725000000000002
+   },
+   {
+    "nprobe": 4,
+    "mean_ms": 17.209134400002313,
+    "p95_ms": 64.25348750024114,
+    "mean_groups": 10.0,
+    "group_recall": 0.9024999999999999
+   },
+   {
+    "nprobe": 8,
+    "mean_ms": 20.351633325003604,
+    "p95_ms": 60.702666649649466,
+    "mean_groups": 10.0,
+    "group_recall": 0.915
+   },
+   {
+    "nprobe": 16,
+    "mean_ms": 28.871616549986356,
+    "p95_ms": 66.13307259999601,
+    "mean_groups": 10.0,
+    "group_recall": 0.9324999999999999
+   },
+   {
+    "nprobe": 32,
+    "mean_ms": 40.969631174971255,
+    "p95_ms": 75.54746839982727,
+    "mean_groups": 10.0,
+    "group_recall": 0.945
+   },
+   {
+    "nprobe": 64,
+    "mean_ms": 69.01642494999578,
+    "p95_ms": 90.72747920015443,
+    "mean_groups": 10.0,
+    "group_recall": 0.945
+   }
+  ],
+  "es": [
+   {
+    "k": 10,
+    "num_candidates": 100,
+    "mean_ms": 1.2119896000285735,
+    "p95_ms": 1.5769874998341031,
+    "mean_groups": 2.525,
+    "group_recall": 0.25250000000000006
+   },
+   {
+    "k": 50,
+    "num_candidates": 200,
+    "mean_ms": 1.82948019999003,
+    "p95_ms": 1.4138148999109033,
+    "mean_groups": 4.475,
+    "group_recall": 0.44749999999999995
+   },
+   {
+    "k": 100,
+    "num_candidates": 200,
+    "mean_ms": 1.420890624990534,
+    "p95_ms": 1.6363211501129626,
+    "mean_groups": 5.7,
+    "group_recall": 0.57
+   },
+   {
+    "k": 100,
+    "num_candidates": 400,
+    "mean_ms": 1.5361614249741251,
+    "p95_ms": 2.139483999940239,
+    "mean_groups": 5.7,
+    "group_recall": 0.57
+   },
+   {
+    "k": 200,
+    "num_candidates": 400,
+    "mean_ms": 3.751809274990592,
+    "p95_ms": 5.605653849988812,
+    "mean_groups": 6.675,
+    "group_recall": 0.6675000000000001
+   },
+   {
+    "k": 400,
+    "num_candidates": 800,
+    "mean_ms": 3.4203229250010736,
+    "p95_ms": 4.856966050033405,
+    "mean_groups": 8.075,
+    "group_recall": 0.8074999999999999
+   },
+   {
+    "k": 800,
+    "num_candidates": 1600,
+    "mean_ms": 3.838621774946205,
+    "p95_ms": 4.844818399965332,
+    "mean_groups": 9.375,
+    "group_recall": 0.9375
+   }
+  ]
+ }
+}

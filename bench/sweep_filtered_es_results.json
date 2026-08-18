@@ -1,0 +1,268 @@
+{
+ "filter": "main_category == \"All Electronics\" and average_rating >= 4",
+ "es_filter": [
+  {
+   "term": {
+    "main_category.keyword": "All Electronics"
+   }
+  },
+  {
+   "range": {
+    "average_rating": {
+     "gte": 4
+    }
+   }
+  }
+ ],
+ "n_queries": 40,
+ "k": 10,
+ "filter_match_rows": 20705,
+ "total_rows": 97894,
+ "results": [
+  {
+   "num_candidates": 10,
+   "oversample": 0,
+   "recall": 0.695,
+   "mean_ms": 3.455346849996488,
+   "p95_ms": 4.35270209997327
+  },
+  {
+   "num_candidates": 10,
+   "oversample": 1,
+   "recall": 0.695,
+   "mean_ms": 2.624441700002933,
+   "p95_ms": 3.217129449964771
+  },
+  {
+   "num_candidates": 10,
+   "oversample": 2,
+   "recall": 0.8925000000000001,
+   "mean_ms": 2.324514599999361,
+   "p95_ms": 3.189029149953626
+  },
+  {
+   "num_candidates": 10,
+   "oversample": 3,
+   "recall": 0.9025000000000001,
+   "mean_ms": 2.5379291249976177,
+   "p95_ms": 3.590089599995849
+  },
+  {
+   "num_candidates": 10,
+   "oversample": 5,
+   "recall": 0.925,
+   "mean_ms": 4.415424025002324,
+   "p95_ms": 5.441197900012185
+  },
+  {
+   "num_candidates": 20,
+   "oversample": 0,
+   "recall": 0.7474999999999999,
+   "mean_ms": 2.723172750000913,
+   "p95_ms": 6.623505599969797
+  },
+  {
+   "num_candidates": 20,
+   "oversample": 1,
+   "recall": 0.7474999999999999,
+   "mean_ms": 1.7526072250007019,
+   "p95_ms": 1.9620181000249202
+  },
+  {
+   "num_candidates": 20,
+   "oversample": 2,
+   "recall": 0.8925000000000001,
+   "mean_ms": 1.7664062500003297,
+   "p95_ms": 1.9679839500042817
+  },
+  {
+   "num_candidates": 20,
+   "oversample": 3,
+   "recall": 0.9025000000000001,
+   "mean_ms": 1.859751150000477,
+   "p95_ms": 2.0141319000117615
+  },
+  {
+   "num_candidates": 20,
+   "oversample": 5,
+   "recall": 0.925,
+   "mean_ms": 1.7193053000013947,
+   "p95_ms": 1.953968150016294
+  },
+  {
+   "num_candidates": 50,
+   "oversample": 0,
+   "recall": 0.755,
+   "mean_ms": 1.6853906499903815,
+   "p95_ms": 2.03116459996977
+  },
+  {
+   "num_candidates": 50,
+   "oversample": 1,
+   "recall": 0.755,
+   "mean_ms": 1.608125950002659,
+   "p95_ms": 2.0683253500067167
+  },
+  {
+   "num_candidates": 50,
+   "oversample": 2,
+   "recall": 0.9199999999999999,
+   "mean_ms": 1.5165520500019625,
+   "p95_ms": 1.6476604499928271
+  },
+  {
+   "num_candidates": 50,
+   "oversample": 3,
+   "recall": 0.9225,
+   "mean_ms": 1.4469802499959883,
+   "p95_ms": 1.642762799966135
+  },
+  {
+   "num_candidates": 50,
+   "oversample": 5,
+   "recall": 0.925,
+   "mean_ms": 1.4049489249984504,
+   "p95_ms": 1.6997270999979714
+  },
+  {
+   "num_candidates": 100,
+   "oversample": 0,
+   "recall": 0.7775000000000001,
+   "mean_ms": 1.53757714999756,
+   "p95_ms": 1.785739599984026
+  },
+  {
+   "num_candidates": 100,
+   "oversample": 1,
+   "recall": 0.7775000000000001,
+   "mean_ms": 1.6361187749993178,
+   "p95_ms": 2.2338083500159196
+  },
+  {
+   "num_candidates": 100,
+   "oversample": 2,
+   "recall": 0.9400000000000001,
+   "mean_ms": 1.561099999992166,
+   "p95_ms": 1.7959249999620397
+  },
+  {
+   "num_candidates": 100,
+   "oversample": 3,
+   "recall": 0.95,
+   "mean_ms": 1.8732677499997408,
+   "p95_ms": 2.8536499999717075
+  },
+  {
+   "num_candidates": 100,
+   "oversample": 5,
+   "recall": 0.9524999999999999,
+   "mean_ms": 1.8150271000024532,
+   "p95_ms": 2.835633649957003
+  },
+  {
+   "num_candidates": 200,
+   "oversample": 0,
+   "recall": 0.775,
+   "mean_ms": 1.5265802249984972,
+   "p95_ms": 1.8840190500043263
+  },
+  {
+   "num_candidates": 200,
+   "oversample": 1,
+   "recall": 0.775,
+   "mean_ms": 1.680015624998532,
+   "p95_ms": 2.239860099979296
+  },
+  {
+   "num_candidates": 200,
+   "oversample": 2,
+   "recall": 0.945,
+   "mean_ms": 1.6182208750009863,
+   "p95_ms": 2.0478875000065955
+  },
+  {
+   "num_candidates": 200,
+   "oversample": 3,
+   "recall": 0.9574999999999999,
+   "mean_ms": 1.6710823249923124,
+   "p95_ms": 2.1991172999747732
+  },
+  {
+   "num_candidates": 200,
+   "oversample": 5,
+   "recall": 0.96,
+   "mean_ms": 1.703745799993328,
+   "p95_ms": 2.5782371500042696
+  },
+  {
+   "num_candidates": 500,
+   "oversample": 0,
+   "recall": 0.7725,
+   "mean_ms": 1.6315417250012842,
+   "p95_ms": 1.94253095001784
+  },
+  {
+   "num_candidates": 500,
+   "oversample": 1,
+   "recall": 0.7725,
+   "mean_ms": 1.6502021000022182,
+   "p95_ms": 1.934391700009996
+  },
+  {
+   "num_candidates": 500,
+   "oversample": 2,
+   "recall": 0.9424999999999999,
+   "mean_ms": 1.6577885000060633,
+   "p95_ms": 1.8847726000132068
+  },
+  {
+   "num_candidates": 500,
+   "oversample": 3,
+   "recall": 0.9574999999999999,
+   "mean_ms": 1.5349073499990595,
+   "p95_ms": 1.836373550000303
+  },
+  {
+   "num_candidates": 500,
+   "oversample": 5,
+   "recall": 0.96,
+   "mean_ms": 1.6414165749893073,
+   "p95_ms": 2.104563949990279
+  },
+  {
+   "num_candidates": 1000,
+   "oversample": 0,
+   "recall": 0.7699999999999999,
+   "mean_ms": 1.8656780750035296,
+   "p95_ms": 2.320997899985855
+  },
+  {
+   "num_candidates": 1000,
+   "oversample": 1,
+   "recall": 0.7699999999999999,
+   "mean_ms": 1.7835739749941126,
+   "p95_ms": 2.064006549989017
+  },
+  {
+   "num_candidates": 1000,
+   "oversample": 2,
+   "recall": 0.9399999999999998,
+   "mean_ms": 1.900883375000717,
+   "p95_ms": 2.273816949988827
+  },
+  {
+   "num_candidates": 1000,
+   "oversample": 3,
+   "recall": 0.9574999999999999,
+   "mean_ms": 1.77362912500314,
+   "p95_ms": 2.1350601000136744
+  },
+  {
+   "num_candidates": 1000,
+   "oversample": 5,
+   "recall": 0.96,
+   "mean_ms": 1.812816625003677,
+   "p95_ms": 2.3069002999648087
+  }
+ ]
+}
