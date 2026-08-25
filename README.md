@@ -5,7 +5,9 @@ between Milvus 3.0 and Elasticsearch 9.4.
 
 ![screenshot](live_demo_static.png)
 
-*Used as the basis for: [https://talks.simonhearne.com/2026-08-milvus-search-gap/](https://talks.simonhearne.com/2026-08-milvus-search-gap/)*
+- *Used as the basis for: [https://talks.simonhearne.com/2026-08-milvus-search-gap/](https://talks.simonhearne.com/2026-08-milvus-search-gap/)*
+
+- Check the live walkthrough here on YouTube: https://www.youtube.com/watch?v=XxcA1NSQnCo
 
 One `docker compose up` brings up both engines and a browser app in which each
 search capability is a panel. The Milvus and Elasticsearch calls sit next to
