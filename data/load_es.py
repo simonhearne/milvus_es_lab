@@ -1,5 +1,5 @@
 """
-Load data/amazon_reviews.parquet into local Elasticsearch 9.4.
+Load data/amazon_reviews.parquet into local Elasticsearch 9.5.
 
 Parity choices that make the side-by-side honest:
   - text_snippet uses a custom analyzer mirroring the Milvus analyzer chain
@@ -94,7 +94,7 @@ for name in ts_fields:                   # analogue of Milvus TIMESTAMPTZ
     properties[name] = {"type": "date"}
 
 for name, dim in dense.items():
-    # 9.4 defaults new dense_vector indices to bbq_disk; the notebook recreates
+    # 9.5 defaults new dense_vector indices to bbq_disk; the notebook recreates
     # indices per-segment to demo int8_hnsw / bbq_disk / flat trade-offs.
     properties[name] = {"type": "dense_vector", "dims": int(dim),
                         "index": True, "similarity": "cosine"}

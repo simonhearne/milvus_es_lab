@@ -1,7 +1,7 @@
-# Milvus 3.0 and Elasticsearch 9.4: a side-by-side query semantics lab
+# Milvus 3.0 and Elasticsearch 9.5: a side-by-side query semantics lab
 
 A simple, honest lab framework for evaluating query and search semantics
-between Milvus 3.0 and Elasticsearch 9.4.
+between Milvus 3.0 and Elasticsearch 9.5.
 
 ![screenshot](live_demo_static.png)
 
@@ -26,7 +26,7 @@ against the running containers with green/amber checks.
 | Service | Port | Purpose |
 |---|---|---|
 | Milvus 3.0 standalone | 19530, 9091 | vector engine + WebUI (`/webui/`) |
-| Elasticsearch 9.4 | 9200 | vector engine (basic licence, security disabled; local lab only) |
+| Elasticsearch 9.5 | 9200 | vector engine (basic licence, security disabled; local lab only) |
 | Lab app | 8080 | the side-by-side comparison UI (localhost only) |
 
 `etcd` and `minio` also come up; they are Milvus's storage dependencies.
@@ -271,7 +271,7 @@ is `refine_k`'s.
 
 ## Operational notes
 
-**Milvus image tag** is pinned to `MILVUS_TAG=v3.0.0` (GA). To move to another
+**Milvus image tag** is pinned to `MILVUS_TAG=v3.0.1` (GA). To move to another
 tag, change that line in `.env` and:
 
 ```bash

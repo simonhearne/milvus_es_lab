@@ -17,7 +17,7 @@ class _Attr:
 
 
 class _StubMilvus:
-    def __init__(self, docs=97894, dim=1024, version="v3.0.0"):
+    def __init__(self, docs=97894, dim=1024, version="v3.0.1"):
         self._docs, self._dim, self._version = docs, dim, version
 
     def list_collections(self):
@@ -53,7 +53,7 @@ class _StubES:
         return True
 
     def info(self):
-        return {"version": {"number": "9.4.3"}}
+        return {"version": {"number": "9.5.3"}}
 
     def count(self, index=None):
         return {"count": self._docs}

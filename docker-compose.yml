@@ -1,4 +1,4 @@
-# Milvus 3.0 vs Elasticsearch 9.4 — side-by-side web demo
+# Milvus 3.0 vs Elasticsearch 9.5 — side-by-side web demo
 # One `docker compose up -d` brings up both engines + the browser demo app.
 #
 # Tags are pinned via .env so you can flip Milvus to another tag without editing
@@ -46,7 +46,7 @@ services:
 
   # ------------------------------------------------------------------ Milvus
   milvus:
-    image: milvusdb/milvus:${MILVUS_TAG:-v3.0.0}
+    image: milvusdb/milvus:${MILVUS_TAG:-v3.0.1}
     command: ["milvus", "run", "standalone"]
     deploy:
       resources:
@@ -76,7 +76,7 @@ services:
     build:
       context: ./es
       args:
-        ES_TAG: "${ES_TAG:-9.4.3}"
+        ES_TAG: "${ES_TAG:-9.5.3}"
     deploy:
       resources:
         limits:
@@ -115,8 +115,8 @@ services:
       - MILVUS_URI=http://milvus:19530
       - ES_URI=http://elasticsearch:9200
       - PYTHONPATH=/workspace
-      - MILVUS_TAG=${MILVUS_TAG:-v3.0.0}
-      - ES_TAG=${ES_TAG:-9.4.3}
+      - MILVUS_TAG=${MILVUS_TAG:-v3.0.1}
+      - ES_TAG=${ES_TAG:-9.5.3}
     volumes:
       - ./:/workspace
     working_dir: /workspace

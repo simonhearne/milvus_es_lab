@@ -17,8 +17,8 @@ ALLOC = {"memory": "8G", "cpus": "4"}          # deploy.resources.limits, both e
 ES_HEAP_BYTES = 4 * 1024 ** 3                  # ES_JAVA_OPTS -Xms4g -Xmx4g
 ES_EXPECT_NODES = 1                            # discovery.type=single-node
 ES_EXPECT_LICENSE = "basic"                    # bbq_hnsw needs no trial licence
-MILVUS_DEFAULT_TAG = "v3.0.0"                  # .env MILVUS_TAG default
-ES_DEFAULT_TAG = "9.4.3"                        # .env ES_TAG default
+MILVUS_DEFAULT_TAG = "v3.0.1"                  # .env MILVUS_TAG default
+ES_DEFAULT_TAG = "9.5.3"                        # .env ES_TAG default
 COLLECTION = "amazon_reviews"
 DENSE_FIELD = "text_vec"
 EXPECT_DIM = 1024
@@ -242,7 +242,7 @@ def describe(session):
             "analyzer": "standard + lowercase + asciifolding + english stemmer + english stop",
             "milvus_index": "IVF_RABITQ + SQ8 refine",
             "es_index": "bbq_hnsw m=16 ef_construction=100, oversample 3.0 "
-                        "(dense_vector default, ES 9.4)",
+                        "(dense_vector default, ES 9.5)",
         },
         "checks": _checks(m, e),
     }

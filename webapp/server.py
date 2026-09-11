@@ -26,7 +26,7 @@ from webapp.session import Session
 HERE = os.path.dirname(os.path.abspath(__file__))
 STATIC = os.path.join(HERE, "static")
 
-app = FastAPI(title="Milvus 3.0 vs Elasticsearch 9.4 — demo")
+app = FastAPI(title="Milvus 3.0 vs Elasticsearch 9.5 — demo")
 session = Session()
 display = DisplayIndex()
 FEATURE_MAP = dict(FEATURES)

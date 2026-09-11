@@ -1,5 +1,5 @@
 """
-Elasticsearch 9.4 adapter for the amazon_reviews schema.
+Elasticsearch 9.5 adapter for the amazon_reviews schema.
 
 Defaults mirror the Milvus adapter: dense field text_vec, BM25 over text_snippet
 (custom amazon_en analyzer), grouping via collapse on main_category. Pass
