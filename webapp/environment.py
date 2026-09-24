@@ -17,7 +17,7 @@ ALLOC = {"memory": "8G", "cpus": "4"}          # deploy.resources.limits, both e
 ES_HEAP_BYTES = 4 * 1024 ** 3                  # ES_JAVA_OPTS -Xms4g -Xmx4g
 ES_EXPECT_NODES = 1                            # discovery.type=single-node
 ES_EXPECT_LICENSE = "basic"                    # bbq_hnsw needs no trial licence
-MILVUS_DEFAULT_TAG = "v3.0.1"                  # .env MILVUS_TAG default
+MILVUS_DEFAULT_TAG = "v3.0.2"                  # .env MILVUS_TAG default
 ES_DEFAULT_TAG = "9.5.3"                        # .env ES_TAG default
 COLLECTION = "amazon_reviews"
 DENSE_FIELD = "text_vec"
