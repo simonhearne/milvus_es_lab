@@ -17,7 +17,7 @@ class _Attr:
 
 
 class _StubMilvus:
-    def __init__(self, docs=97894, dim=1024, version="v3.0.1"):
+    def __init__(self, docs=97894, dim=1024, version="v3.0.2"):
         self._docs, self._dim, self._version = docs, dim, version
 
     def list_collections(self):

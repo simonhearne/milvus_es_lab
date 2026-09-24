@@ -46,7 +46,7 @@ services:
 
   # ------------------------------------------------------------------ Milvus
   milvus:
-    image: milvusdb/milvus:${MILVUS_TAG:-v3.0.1}
+    image: milvusdb/milvus:${MILVUS_TAG:-v3.0.2}
     command: ["milvus", "run", "standalone"]
     deploy:
       resources:
@@ -115,7 +115,7 @@ services:
       - MILVUS_URI=http://milvus:19530
       - ES_URI=http://elasticsearch:9200
       - PYTHONPATH=/workspace
-      - MILVUS_TAG=${MILVUS_TAG:-v3.0.1}
+      - MILVUS_TAG=${MILVUS_TAG:-v3.0.2}
       - ES_TAG=${ES_TAG:-9.5.3}
     volumes:
       - ./:/workspace
