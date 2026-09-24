@@ -198,14 +198,18 @@ FEATURES = [
         "milvus": snippet('''
             dense = AnnSearchRequest(
               [qv], "text_vec", SEARCH, limit=50)
-
             sparse = AnnSearchRequest(
               ["wireless earbuds"], "text_sparse", {}, limit=50)
-
+            rrf = Function(
+              name="rrf",
+              function_type=FunctionType.RERANK,
+              input_field_names=[],
+              params={"reranker": "rrf", "k": 60, "weights": [1, 1]},
+            )
             client.hybrid_search(
               "amazon_reviews",
               [dense, sparse],
-              ranker=RRFRanker(),
+              ranker=rrf,
               output_fields=["parent_asin"],
               limit=10,
             )
