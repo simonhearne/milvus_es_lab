@@ -20,7 +20,9 @@ import datetime as dt
 
 import numpy as np
 from pymilvus import (MilvusClient, AnnSearchRequest, RRFRanker,
-                      Function, FunctionType, FunctionScore, LexicalHighlighter)
+                      Function, FunctionType, FunctionScore, LexicalHighlighter,
+                      FunctionChain, FunctionChainStage)
+from pymilvus.function_chain import col, fn
 from elasticsearch import Elasticsearch
 
 from engines.milvus_engine import MilvusEngine
@@ -96,6 +98,12 @@ class Session:
             "FunctionType": FunctionType,
             "FunctionScore": FunctionScore,
             "LexicalHighlighter": LexicalHighlighter,
+            # Milvus 3.0 multi-stage reranking (function chains).
+            "FunctionChain": FunctionChain,
+            "FunctionChainStage": FunctionChainStage,
+            "col": col,
+            "fn": fn,
+            "DEEP": MilvusEngine.DEEP_SEARCH,
             # The dates panel computes its own boundary: Milvus has no date math.
             "datetime": dt.datetime,
             "timezone": dt.timezone,

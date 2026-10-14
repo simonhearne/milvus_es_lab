@@ -104,7 +104,7 @@ Seed code comes from `webapp/snippets.py`, the single source of truth for every
 panel. Snippets are executable: they must end in an expression (the raw SDK
 response).
 
-### The sixteen panels
+### The seventeen panels
 
 | panel | what it shows |
 |---|---|
@@ -119,6 +119,7 @@ response).
 | `ordered` | Kernel-side ordering: retrieve by similarity, present ordered by scalar fields |
 | `aggregate` | Server-side aggregation: `count`/`avg`/`min`/`max` pushed into the kernel |
 | `rescore` | Milvus `FunctionScore` + decay reranker vs ES `function_score` + `gauss`: same Gaussian-decay vocabulary (`origin`/`scale`/`offset`/`decay`), cheaper products favoured on both sides |
+| `chain` | Multi-stage reranking over 200 ANN candidates: rating → price (keep 50) → review count (keep 10). Milvus `function_chains` (L0 runs map-only inside each QueryNode; L1/L2 can `sort`/`limit`) vs ES `function_score` in the query phase plus two `rescore` windows, all on the basic licence. Runs a deeper `nprobe` than the other panels (see `DEEP_SEARCH` in `engines/milvus_engine.py`); ES scores read Milvus + 1 because of its `(1+cos)/2` cosine |
 | `highlight` | Milvus `LexicalHighlighter` vs ES `highlight`: same parameters (`pre_tags`/`post_tags`/`fragment_size`/`num_of_fragments`), same response shape, rendered on the result cards |
 | `phrase` | Milvus `PHRASE_MATCH(...)` filter (BM25 still scores) vs ES `match_phrase` with `slop`; see the badge note below |
 | `geo` | Milvus `st_dwithin` on a `GEOMETRY` field vs ES `geo_distance`: same radius query, opposite axis order (`POINT(lon lat)` vs `{lat, lon}`), a common migration bug made visible |

@@ -80,7 +80,9 @@ function editor(id) {
     mode: "python",
     theme: "material-darker",
     lineNumbers: true,
-    viewportMargin: Infinity, // grow to content -- no inner scrollbar on stage
+    // Render every line: editors grow to content, capped at 17 lines by CSS
+    // (.CodeMirror-scroll max-height); only longer snippets scroll inside.
+    viewportMargin: Infinity,
   });
 }
 
