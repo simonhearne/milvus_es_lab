@@ -97,7 +97,9 @@ class ESEngine(Engine):
         """terms agg + avg sub-aggs — the analogue of Milvus kernel aggregation."""
         import time
         t0 = time.perf_counter()
-        res = self.client.search(index=INDEX, size=0, aggs={
+        # request_cache off: size=0 aggs are cached per shard, so repeat runs
+        # would time a cache hit rather than the aggregation.
+        res = self.client.search(index=INDEX, size=0, request_cache=False, aggs={
             "by_group": {
                 "terms": {"field": f"{group_field}.keyword", "size": limit},
                 "aggs": {"avg_price": {"avg": {"field": "price"}},

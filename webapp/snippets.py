@@ -357,7 +357,7 @@ FEATURES = [
     }),
     ("aggregate", {
         "title": "Server-side aggregation",
-        "subtitle": "count / avg / min / max pushed into the kernel",
+        "subtitle": "count / avg / min / max pushed into the kernel — ES request cache off, both sides compute",
         "metric": "rows",
         "milvus": snippet('''
             client.query(
@@ -374,8 +374,9 @@ FEATURES = [
             )
         '''),
         "es": snippet('''
+            # Shard request cache off, or repeat runs time a cache hit.
             client.search(
-              index="amazon_reviews", size=0,
+              index="amazon_reviews", size=0, request_cache=False,
               aggs={"by_group": {
                 "terms": {
                   "field": "main_category.keyword",
