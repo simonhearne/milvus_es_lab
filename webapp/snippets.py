@@ -8,8 +8,9 @@ live engines and renders each response onto a card. Rules:
   splits that final expression off and evaluates it; a trailing statement is
   rejected at compile time because there is nothing to normalize.
 - Names available: client, qv, img_qv, SEARCH, AnnSearchRequest, RRFRanker,
-  Function, FunctionType, FunctionScore, LexicalHighlighter, datetime, timezone,
-  timedelta. See webapp/session.py. `client` is each pane's OWN SDK client --
+  Function, FunctionType, FunctionScore, LexicalHighlighter, FunctionChain,
+  FunctionChainStage, col, fn, DEEP, datetime, timezone, timedelta. See
+  webapp/session.py. `client` is each pane's OWN SDK client --
   MilvusClient on the left, Elasticsearch on the right -- so the two calls
   line up name-for-name when read side by side.
 - ES searches pass _source=False (or a narrow list). Payload the benchmark
@@ -18,7 +19,10 @@ live engines and renders each response onto a card. Rules:
 House style, so the two panes read as one diff rather than two dialects:
 
 - At most 17 lines and ~62 columns per snippet: the editors sit side by side on
-  a projector, and anything taller or wider is read by nobody.
+  a projector, and anything taller or wider is read by nobody. The editors
+  stop growing at 17 lines and scroll inside (webapp/static/app.css), so a
+  longer snippet costs the audience a scroll. `chain` is the deliberate
+  exception (29 lines: three stages don't fit in 17).
 - Call arguments indent 2 from the call, one per line, trailing comma, closing
   paren at column 0.
 - Nested dicts/lists either fit on one line or open a block indented 2 with the
@@ -429,6 +433,74 @@ FEATURES = [
                   "offset": 10, "decay": 0.5}}}],
                 "boost_mode": "multiply",
               }},
+              size=10,
+            )
+        '''),
+    }),
+    ("chain", {
+        "title": "Multi-stage reranking",
+        "subtitle": "200 candidates → rating → price (keep 50) → reviews (keep 10): Milvus function chains vs ES rescore",
+        "metric": "overlap",
+        # Stage-for-stage: L0 = function_score in the query phase, L1/L2 =
+        # the two rescorers. A stage's .limit() is the next window_size.
+        # Linear decay floors at `decay` in Milvus but at 0 in ES, so each
+        # linear scale spans its field's full range and the floor never bites.
+        "milvus": snippet('''
+            # L0 runs inside each QueryNode: map only, no sort/limit.
+            l0 = (FunctionChain(FunctionChainStage.L0_RERANK)
+              .map("rated", fn.decay(col("average_rating"),
+                function="linear", origin=5, scale=4))
+              .map("$score", fn.num_combine(col("$score"), col("rated"),
+                mode="weighted", weights=[1, 0.2])))
+            # L1 re-scores all 200 by price, keeps 50.
+            l1 = (FunctionChain(FunctionChainStage.L1_RERANK)
+              .map("cheap", fn.decay(col("price"),
+                function="gauss", origin=0, scale=30, offset=10))
+              .map("$score", fn.num_combine(col("$score"), col("cheap"),
+                mode="weighted", weights=[1, 0.2]))
+              .sort("$score").limit(50))
+            # L2: 0.5 -> 1.0 ramp up to 100 reviews, keeps 10.
+            l2 = (FunctionChain(FunctionChainStage.L2_RERANK)
+              .map("proven", fn.decay(col("rating_number"),
+                function="linear", origin=1e6,
+                offset=1e6 - 100, scale=100))
+              .map("$score", fn.num_combine(col("$score"), col("proven"),
+                mode="weighted", weights=[1, 0.2]))
+              .sort("$score").limit(10))
+            client.search(
+              "amazon_reviews",
+              data=[qv],
+              anns_field="text_vec",
+              search_params=DEEP,
+              function_chains=[l0, l1, l2],
+              limit=200,
+            )
+        '''),
+        "es": snippet('''
+            # knn boost 2 undoes ES's (1+cos)/2 scaling: ES = Milvus + 1.
+            client.search(
+              index="amazon_reviews",
+              query={"function_score": {
+                "query": {"knn": {
+                  "field": "text_vec", "query_vector": qv,
+                  "k": 200, "num_candidates": 400, "boost": 2}},
+                "functions": [{"linear": {"average_rating": {
+                  "origin": 5, "scale": 4}}, "weight": 0.2}],
+                "boost_mode": "sum",
+              }},
+              rescore=[
+                {"window_size": 200, "query": {
+                  "rescore_query_weight": 0.2,
+                  "rescore_query": {"function_score": {"functions": [
+                    {"gauss": {"price": {
+                      "origin": 0, "scale": 30, "offset": 10}}}]}}}},
+                {"window_size": 50, "query": {
+                  "rescore_query_weight": 0.2,
+                  "rescore_query": {"function_score": {"functions": [
+                    {"linear": {"rating_number": {"origin": 1e6,
+                      "offset": 1e6 - 100, "scale": 100}}}]}}}},
+              ],
+              _source=False,
               size=10,
             )
         '''),

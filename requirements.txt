@@ -1,5 +1,5 @@
 # For running the loaders / demo app outside the container (e.g. your laptop).
-pymilvus>=3.0
+pymilvus>=3.0.1  # 3.0.1 adds FunctionChain (chain panel)
 elasticsearch>=9.5,<10
 pyarrow
 pandas

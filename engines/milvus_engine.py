@@ -81,6 +81,17 @@ class MilvusEngine(Engine):
     SEARCH = {"params": {"nprobe": NPROBE, "rbq_bits_query": 4,
                          "refine_k": REFINE_K}}
 
+    # A multi-stage reranker works on a deep candidate window (limit=200),
+    # and nprobe=4 is tuned for top-10, not top-200: there Milvus's top-200
+    # agrees with ES's on only 71% of ids, and the chain panel's overlap@10
+    # reads 0.87 (min 0.2) for reasons that have nothing to do with reranking.
+    # Measured on v3.0.2, 20 queries, chain panel overlap@10 mean / min:
+    #   nprobe 4 -> 0.87 / 0.2 (1.6 ms)   16 -> 0.91 / 0.3   64 -> 0.96 / 0.5 (1.9 ms)
+    # The 0.5 is one query's recall at depth: nprobe 1024 lifts it to 0.9, and
+    # with both engines near-exhaustive the panel reads 0.985 / 0.9.
+    DEEP_SEARCH = {"params": {"nprobe": 64, "rbq_bits_query": 4,
+                              "refine_k": REFINE_K}}
+
     def __init__(self, uri=None, primary_vec="text_vec", pk="parent_asin",
                  sparse_field="text_sparse", text_field="text_snippet"):
         self.client = MilvusClient(uri=uri or os.environ.get(

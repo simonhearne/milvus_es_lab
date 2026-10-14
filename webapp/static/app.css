@@ -84,8 +84,12 @@ main { padding: 18px 20px 60px; flex: 1; }
 .badge { font: 400 11px var(--mono); color: var(--mute); background: var(--card); padding: 2px 6px; border-radius: 4px; }
 .pane h2 .variant { margin-left: auto; font: inherit; font-size: 12px; color: var(--ink); padding: 3px 10px; border-radius: 6px; border: 1px solid var(--line); background: var(--white); cursor: pointer; }
 .pane h2 .variant:hover { border-color: var(--slate); }
-.CodeMirror { height: auto; min-height: 200px; max-width: 100%; border-radius: 10px; font-family: var(--mono); font-size: clamp(13px, 1.05vw, 20px); }
-.CodeMirror-scroll { min-height: 200px; overflow-x: auto; }
+.CodeMirror { height: auto; min-height: 200px; max-width: 100%; border-radius: 10px; font-family: var(--mono); font-size: clamp(13px, 1.05vw, 20px); line-height: 1.16; }
+/* Grow to content up to the 17-line house limit (see webapp/snippets.py), then
+   scroll inside the editor. lh tracks the vw-scaled font, and the explicit
+   line-height above (what `normal` rendered as) keeps 17lh = 17 rows; +8px is
+   .CodeMirror-lines' 4px top/bottom padding. */
+.CodeMirror-scroll { min-height: 200px; max-height: calc(17lh + 8px); overflow-x: auto; }
 
 @media (max-width: 1000px) { .editors { grid-template-columns: 1fr; } }
 
