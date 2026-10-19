@@ -41,14 +41,8 @@ class Session:
         self.pk = self.meta["primary_key"]
         self.errors = {"milvus": None, "es": None, "gt": None}
 
-        self.client = None
-        try:
-            self.client = MilvusClient(
-                uri=os.environ.get("MILVUS_URI", "http://localhost:19530"),
-                timeout=TIMEOUT,
-            )
-        except Exception as e:
-            self.errors["milvus"] = f"{type(e).__name__}: {e}"
+        self._client = None
+        self._connect_milvus()
 
         self.es = None
         try:
@@ -64,6 +58,28 @@ class Session:
             self.gt = np.load(GT, allow_pickle=True)
         except Exception as e:
             self.errors["gt"] = f"{type(e).__name__}: {e}"
+
+    # ---- milvus connection --------------------------------------------------
+    # MilvusClient connects in its constructor and raises at once if Milvus is
+    # not up yet -- the normal case on a cold `docker compose up`, where the
+    # demo boots first. So keep retrying until one succeeds. Once connected, the
+    # client rides out Milvus restarts by itself.
+
+    def _connect_milvus(self):
+        try:
+            self._client = MilvusClient(
+                uri=os.environ.get("MILVUS_URI", "http://localhost:19530"),
+                timeout=TIMEOUT,
+            )
+            self.errors["milvus"] = None
+        except Exception as e:
+            self.errors["milvus"] = f"{type(e).__name__}: {e}"
+
+    @property
+    def client(self):
+        if self._client is None:
+            self._connect_milvus()
+        return self._client
 
     # ---- queries ------------------------------------------------------------
 
