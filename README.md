@@ -272,7 +272,7 @@ is `refine_k`'s.
 
 ## Operational notes
 
-**Milvus image tag** is pinned to `MILVUS_TAG=v3.0.2` (GA). To move to another
+**Milvus image tag** is pinned to `MILVUS_TAG=v3.0.3` (GA). To move to another
 tag, change that line in `.env` and:
 
 ```bash
@@ -283,6 +283,14 @@ The same default is repeated as a `:-` fallback in `docker-compose.yml` (twice)
 and as `MILVUS_DEFAULT_TAG` in `webapp/environment.py`, for when `.env` is
 absent; keep the three in sync. Back up `volumes/` before any tag change: there
 is no rollback path if a tag changes the on-disk format.
+
+**Elasticsearch image tag** (`ES_TAG`, also repeated in `es/Dockerfile` and as
+`ES_DEFAULT_TAG`) works the same way, except that `analysis-icu` is installed
+into the image at build time and must match the ES version, so rebuild first:
+
+```bash
+docker compose build elasticsearch && docker compose up -d --force-recreate elasticsearch
+```
 
 **The `demo` container declares no Docker healthcheck.** Trust the in-app
 health dots and `curl localhost:8080/api/health`, not Docker's status column.
