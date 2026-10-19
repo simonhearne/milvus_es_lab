@@ -53,7 +53,7 @@ class _StubES:
         return True
 
     def info(self):
-        return {"version": {"number": "9.5.3"}}
+        return {"version": {"number": "9.5.5"}}
 
     def count(self, index=None):
         return {"count": self._docs}

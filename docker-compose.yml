@@ -76,7 +76,7 @@ services:
     build:
       context: ./es
       args:
-        ES_TAG: "${ES_TAG:-9.5.3}"
+        ES_TAG: "${ES_TAG:-9.5.5}"
     deploy:
       resources:
         limits:
@@ -116,7 +116,7 @@ services:
       - ES_URI=http://elasticsearch:9200
       - PYTHONPATH=/workspace
       - MILVUS_TAG=${MILVUS_TAG:-v3.0.2}
-      - ES_TAG=${ES_TAG:-9.5.3}
+      - ES_TAG=${ES_TAG:-9.5.5}
     volumes:
       - ./:/workspace
     working_dir: /workspace

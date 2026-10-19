@@ -1,6 +1,7 @@
 # local config + runtime state
 .env
 volumes/
+volumes.bak-*/
 webapp/.cache/
 
 # data artifacts (fetched via data/fetch.py, not stored in git)
