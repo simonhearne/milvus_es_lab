@@ -378,8 +378,6 @@ function latencySection(payload) {
     grid.appendChild(box);
   }
   wrap.appendChild(grid);
-  wrap.appendChild(el("p", "caveat",
-    "Single-machine Docker figures — relative SDK feel, not a benchmark. Dominated by JVM warmup, container CPU limits, and cold cache. For performance claims cite the published 160M-vector study, not this box."));
   return wrap;
 }
 
