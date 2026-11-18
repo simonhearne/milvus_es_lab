@@ -9,6 +9,7 @@ stdlib-only imports on purpose: the engine handles arrive on the passed-in
 `session`, so this module (and its tests) import without pymilvus / elasticsearch.
 Never raises -- a dead engine costs you its numbers, not the page.
 """
+import datetime as dt
 import os
 import urllib.request
 
@@ -17,12 +18,34 @@ ALLOC = {"memory": "8G", "cpus": "4"}          # deploy.resources.limits, both e
 ES_HEAP_BYTES = 4 * 1024 ** 3                  # ES_JAVA_OPTS -Xms4g -Xmx4g
 ES_EXPECT_NODES = 1                            # discovery.type=single-node
 ES_EXPECT_LICENSE = "basic"                    # bbq_hnsw needs no trial licence
-MILVUS_DEFAULT_TAG = "v3.0.3"                  # .env MILVUS_TAG default
-ES_DEFAULT_TAG = "9.5.5"                        # .env ES_TAG default
+MILVUS_DEFAULT_TAG = "v3.0.6"                  # .env MILVUS_TAG default
+ES_DEFAULT_TAG = "9.5.6"                        # .env ES_TAG default
 COLLECTION = "amazon_reviews"
 DENSE_FIELD = "text_vec"
 EXPECT_DIM = 1024
 EXPECT_METRIC = "cosine"
+# The dates panel asks for the trailing DATES_WINDOW_DAYS of wall-clock time,
+# but first_seen is anchored to when the corpus was loaded or last re-anchored
+# (data/synthesize.py RECENT_DAYS; a test keeps the two equal). Past the window
+# the panel is silently empty on both engines; warn a few days before that.
+DATES_FIELD = "first_seen"
+DATES_WINDOW_DAYS = 30
+DATES_WARN_DAYS = 25
+DATES_FIX = "run data/reanchor_dates.py"
+
+
+def _now():
+    return dt.datetime.now(dt.timezone.utc)
+
+
+def _parse_ts(s):
+    """'2026-08-12T19:14:29Z' (Milvus) or '...T20:01:11.000Z' (ES) -> aware datetime."""
+    if not s:
+        return None
+    try:
+        return dt.datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+    except ValueError:
+        return None
 
 
 def _gib(n):
@@ -56,7 +79,7 @@ def _milvus(session):
            "configured_tag": os.environ.get("MILVUS_TAG", MILVUS_DEFAULT_TAG),
            "version": None, "mode": "standalone", "docs": None,
            "dense_dim": None, "metric": None, "mem_usage_bytes": None,
-           "deps": ["etcd", "minio"]}
+           "newest_first_seen": None, "deps": ["etcd", "minio"]}
     client = getattr(session, "client", None)
     if client is None:
         out["error"] = "Milvus client not constructed"
@@ -101,6 +124,13 @@ def _milvus(session):
     # not read live here; ES is the live-confirmed side of the "Cosine both" check.
     out["metric"] = EXPECT_METRIC.upper()
 
+    try:
+        agg = f"max({DATES_FIELD})"
+        out["newest_first_seen"] = client.query(
+            COLLECTION, filter="", output_fields=[agg])[0][agg]
+    except Exception:
+        pass
+
     out["mem_usage_bytes"] = milvus_mem_bytes(
         os.environ.get("MILVUS_URI", "http://localhost:19530"))
     return out
@@ -111,7 +141,8 @@ def _es(session):
            "configured_tag": os.environ.get("ES_TAG", ES_DEFAULT_TAG),
            "version": None, "nodes": None, "license": None,
            "heap_max_bytes": None, "os_mem_used_bytes": None,
-           "docs": None, "dense_dim": None, "metric": None}
+           "docs": None, "dense_dim": None, "metric": None,
+           "newest_first_seen": None}
     es = getattr(session, "es", None)
     if es is None:
         out["error"] = "Elasticsearch client not constructed"
@@ -151,6 +182,13 @@ def _es(session):
         props = es.indices.get_mapping(index=COLLECTION)[COLLECTION]["mappings"]["properties"]
         out["dense_dim"] = props[DENSE_FIELD].get("dims")
         out["metric"] = props[DENSE_FIELD].get("similarity")
+    except Exception:
+        pass
+    try:
+        out["newest_first_seen"] = es.search(
+            index=COLLECTION, size=0,
+            aggs={"newest": {"max": {"field": DATES_FIELD}}},
+        )["aggregations"]["newest"]["value_as_string"]
     except Exception:
         pass
     return out
@@ -221,7 +259,34 @@ def _checks(m, e):
     else:
         add("Cosine both", "warn", f"Milvus {m['metric']} vs ES {e['metric']}")
 
+    _dates_check(add, m, e, both_up)
     return out
+
+
+def _dates_check(add, m, e, both_up):
+    label = "Dates panel has data"
+    if not both_up:
+        add(label, "na", "both engines must be up")
+        return
+    now = _now()
+    ages = {}
+    for name, side in (("Milvus", m), ("ES", e)):
+        ts = _parse_ts(side.get("newest_first_seen"))
+        ages[name] = None if ts is None else (now - ts).total_seconds() / 86400
+    unread = [name for name, age in ages.items() if age is None]
+    if unread:
+        add(label, "warn", f"could not read newest {DATES_FIELD} on "
+                           f"{' / '.join(unread)}")
+        return
+    age = max(ages.values())                # the staler engine decides
+    if age > DATES_WINDOW_DAYS:
+        add(label, "warn", f"newest listing {int(age)} d old: panel is empty; "
+                           f"{DATES_FIX}")
+    elif age > DATES_WARN_DAYS:
+        add(label, "warn", f"newest listing {int(age)} d old: panel empties in "
+                           f"{int(DATES_WINDOW_DAYS - age)} d; {DATES_FIX}")
+    else:
+        add(label, "good", f"newest listing {int(age)} d old")
 
 
 def describe(session):

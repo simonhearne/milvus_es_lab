@@ -197,12 +197,27 @@ Parquet:
   corpus landing inside the trailing 30 days.
 
 **Operational trap:** `first_seen` is anchored to *load time*, not a fixed
-calendar date. The `dates` panel filters on ES's `now-30d/d`, and a corpus
-pinned to a hardcoded day would quietly stop returning anything once real time
-moved past it. The consequence: **if the corpus was loaded more than 30 days
-ago, the `dates` panel returns nothing on both engines.** Reload
-(`data/load_milvus.py` + `data/load_es.py`) to re-anchor `first_seen`; this is
-also why the app's result cache is re-cut after every reload.
+calendar date, while the `dates` panel asks for the trailing 30 days of
+wall-clock time (`now-30d` on ES, `datetime.now() - 30d` on Milvus). So **once
+the anchor is more than 30 days old, the `dates` panel returns nothing on both
+engines.** The Introduction tab's **Dates panel has data** check warns five
+days ahead and names the fix:
+
+```bash
+docker compose exec demo python data/reanchor_dates.py
+```
+
+It rewrites only `first_seen` in both engines (Milvus partial upsert, ES
+partial update) from one shared anchor, then compacts / force-merges back to
+the post-load segment layout, and clears the panel's cached run. About 5
+minutes; safe to re-run. It also aligns the two engines' anchors to the second,
+which separate loader runs do not. A full reload re-anchors too, but rebuilds
+everything from the Parquet.
+
+Either way every row is rewritten, so both vector indexes are rebuilt and
+approximate results shift slightly, exactly as after a reload. ES filtered
+recall@10 at the demo settings measured 0.887-0.948 across four rebuilds on
+9.5.6 (dense stayed at 0.98); treat recorded recall numbers as one sample.
 
 ## Known gaps (both sides of the story)
 
@@ -266,13 +281,21 @@ Read the first two rows against each other: at `refine_k=1.0`, adding
 `nprobe=64`**. The committed default sets both, and essentially all of the gain
 is `refine_k`'s.
 
+These numbers assume `amazon_reviews` is **one segment**. IVF is built per
+segment and `nprobe` applies to each, so a corpus split in two quietly probes
+twice the buckets (filtered recall@10 at the demo's `nprobe=4`: 0.698 merged vs
+0.740 split, on 3.0.6). A plain `compact()` stops at the 1024 MB
+`segment.maxSize` and leaves this ~1.6 GB corpus split, so `data/milvus_util.py`
+force-merges with `target_size` (4096 MB); check with
+`client.list_persistent_segments("amazon_reviews")`.
+
 `nprobe` does bite, but only far below the default. At `refine_k=2.0`:
 `nprobe=1` → 0.788, `2` → 0.898, `4` → 0.933, `8` → 0.980, `16` → 0.983,
 `64` → 0.990. It has saturated by ~8.
 
 ## Operational notes
 
-**Milvus image tag** is pinned to `MILVUS_TAG=v3.0.3` (GA). To move to another
+**Milvus image tag** is pinned to `MILVUS_TAG=v3.0.6` (GA). To move to another
 tag, change that line in `.env` and:
 
 ```bash
