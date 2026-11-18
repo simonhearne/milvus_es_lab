@@ -281,6 +281,14 @@ Read the first two rows against each other: at `refine_k=1.0`, adding
 `nprobe=64`**. The committed default sets both, and essentially all of the gain
 is `refine_k`'s.
 
+These numbers assume `amazon_reviews` is **one segment**. IVF is built per
+segment and `nprobe` applies to each, so a corpus split in two quietly probes
+twice the buckets (filtered recall@10 at the demo's `nprobe=4`: 0.698 merged vs
+0.740 split, on 3.0.6). A plain `compact()` stops at the 1024 MB
+`segment.maxSize` and leaves this ~1.6 GB corpus split, so `data/milvus_util.py`
+force-merges with `target_size` (4096 MB); check with
+`client.list_persistent_segments("amazon_reviews")`.
+
 `nprobe` does bite, but only far below the default. At `refine_k=2.0`:
 `nprobe=1` → 0.788, `2` → 0.898, `4` → 0.933, `8` → 0.980, `16` → 0.983,
 `64` → 0.990. It has saturated by ~8.
