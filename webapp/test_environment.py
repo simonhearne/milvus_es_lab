@@ -3,8 +3,15 @@
 Run locally:  python3 -m webapp.test_environment
 Or in Docker: docker compose exec -T demo python -m webapp.test_environment
 """
+import datetime as dt
+
 import webapp.environment as environment
 from webapp.environment import describe, ES_HEAP_BYTES
+
+
+def _iso_days_ago(days):
+    """first_seen as each engine reports it, `days` before environment's clock."""
+    return environment._now() - dt.timedelta(days=days)
 
 
 # ---- stubs ---------------------------------------------------------------
@@ -17,8 +24,17 @@ class _Attr:
 
 
 class _StubMilvus:
-    def __init__(self, docs=97894, dim=1024, version="v3.0.6"):
+    def __init__(self, docs=97894, dim=1024, version="v3.0.6", newest_age_days=1):
         self._docs, self._dim, self._version = docs, dim, version
+        self._age = newest_age_days
+
+    def query(self, name, filter="", output_fields=None):
+        if output_fields == ["max(first_seen)"]:
+            if self._age is None:
+                raise RuntimeError("aggregation unsupported")
+            return [{"max(first_seen)":
+                     _iso_days_ago(self._age).strftime("%Y-%m-%dT%H:%M:%SZ")}]
+        return [{"count(*)": self._docs}]
 
     def list_collections(self):
         return ["amazon_reviews", "multilingual_demo"]
@@ -38,8 +54,9 @@ class _StubMilvus:
 
 class _StubES:
     def __init__(self, heap=ES_HEAP_BYTES, nodes=1, license="basic",
-                 docs=97894, dim=1024, sim="cosine"):
+                 docs=97894, dim=1024, sim="cosine", newest_age_days=1):
         self._heap, self._nodes, self._license = heap, nodes, license
+        self._age = newest_age_days
         self._docs, self._dim, self._sim = docs, dim, sim
         self.cluster = _Attr(health=lambda: {"number_of_nodes": self._nodes})
         self.license = _Attr(get=lambda: {"license": {"type": self._license}})
@@ -57,6 +74,12 @@ class _StubES:
 
     def count(self, index=None):
         return {"count": self._docs}
+
+    def search(self, index=None, size=None, aggs=None, **kw):
+        ts = _iso_days_ago(self._age)
+        return {"aggregations": {"newest": {
+            "value": ts.timestamp() * 1000,
+            "value_as_string": ts.strftime("%Y-%m-%dT%H:%M:%S.000Z")}}}
 
 
 class _Session:
@@ -117,6 +140,53 @@ def test_metric_check_is_case_insensitive():
     # Milvus reports COSINE, ES reports cosine — must still be good.
     env = describe(_Session(_StubMilvus(), _StubES(sim="cosine")))
     assert _by_label(env["checks"])["Cosine both"]["state"] == "good"
+
+
+DATES = "Dates panel has data"
+
+
+def test_fresh_dates_are_good():
+    env = describe(_Session(_StubMilvus(newest_age_days=1), _StubES(newest_age_days=1)))
+    c = _by_label(env["checks"])[DATES]
+    assert c["state"] == "good", c
+    assert env["milvus"]["newest_first_seen"] and env["es"]["newest_first_seen"]
+
+
+def test_stale_dates_warn_and_name_the_fix():
+    # The real failure: corpus loaded 98 days ago, panel silently empty.
+    env = describe(_Session(_StubMilvus(newest_age_days=98), _StubES(newest_age_days=98)))
+    c = _by_label(env["checks"])[DATES]
+    assert c["state"] == "warn", c
+    assert "98 d" in c["detail"] and "empty" in c["detail"], c
+    assert "reanchor_dates.py" in c["detail"], c
+
+
+def test_dates_about_to_expire_warn_with_days_left():
+    env = describe(_Session(_StubMilvus(newest_age_days=27.5), _StubES(newest_age_days=27.5)))
+    c = _by_label(env["checks"])[DATES]
+    assert c["state"] == "warn", c
+    assert "empties in 2 d" in c["detail"], c
+
+
+def test_dates_judged_on_the_staler_engine():
+    env = describe(_Session(_StubMilvus(newest_age_days=1), _StubES(newest_age_days=40)))
+    assert _by_label(env["checks"])[DATES]["state"] == "warn"
+
+
+def test_dates_unreadable_is_warn_not_crash():
+    env = describe(_Session(_StubMilvus(newest_age_days=None), _StubES()))
+    c = _by_label(env["checks"])[DATES]
+    assert c["state"] == "warn" and "Milvus" in c["detail"], c
+
+
+def test_dates_na_when_an_engine_is_down():
+    env = describe(_Session(_StubMilvus(), None))
+    assert _by_label(env["checks"])[DATES]["state"] == "na"
+
+
+def test_dates_window_matches_synthesizer():
+    from data import synthesize
+    assert environment.DATES_WINDOW_DAYS == synthesize.RECENT_DAYS
 
 
 def test_new_schema_fields_present_on_both_engines():
