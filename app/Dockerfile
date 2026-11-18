@@ -4,8 +4,8 @@
 FROM python:3.11-slim
 
 RUN pip install --no-cache-dir \
-    "pymilvus>=3.0.1" \
-    "elasticsearch>=9.5,<10" \
+    "pymilvus>=3.0.3" \
+    "elasticsearch>=9.5.1,<10" \
     pyarrow pandas numpy tqdm \
     "fastapi>=0.115" "uvicorn[standard]>=0.30"
 

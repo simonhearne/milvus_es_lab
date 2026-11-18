@@ -272,7 +272,7 @@ is `refine_k`'s.
 
 ## Operational notes
 
-**Milvus image tag** is pinned to `MILVUS_TAG=v3.0.3` (GA). To move to another
+**Milvus image tag** is pinned to `MILVUS_TAG=v3.0.6` (GA). To move to another
 tag, change that line in `.env` and:
 
 ```bash
